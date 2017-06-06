@@ -1,0 +1,27 @@
+package:
+  name: pyculib_sorting
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+build:
+  number: {{ GIT_DESCRIBE_NUMBER|int }}
+  script_env:
+    - LD_LIBRARY_PATH # pass cuda libs through for docker builds
+
+requirements:
+  build:
+    - python
+  run:
+
+test:
+  source_files:
+    - test
+  requires:
+    - numba
+    - numpy
+    - cudatoolkit
+    - pytest
+  commands:
+    - pytest test -v
