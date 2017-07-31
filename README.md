@@ -7,18 +7,34 @@ At present it contains a wrapper around:
  * A segmented sort implementation from
    [ModernGPU](http://nvlabs.github.io/moderngpu)
 
-Pyculib\_sorting is predominantly used by [Pyculib](INSERT_URL) to provide
+Pyculib\_sorting is predominantly used by [Pyculib](https://github.com/numba/pyculib) to provide
 sorting routines.
 
 
 ## Requirements
 Pyculib\_sorting requires the following programs to build and test:
  * Python
- * Nvidia's `nvcc` compiler
+ * NVIDIA's `nvcc` compiler
 
 and the following Python packages
  * pytest
- * numba
+ * Numba
+
+
+## Obtaining the source code
+Pyculib\_sorting relies on git submodules to access the CUB and ModernGPU source code,
+to obtain a code base suitable for building the libraries run:
+
+```
+#> git clone https://github.com/numba/pyculib_sorting.git
+
+#> cd pyculib_sorting
+
+#> git submodule update --init
+```
+
+the URL above may be adjusted to use `ssh` based
+`git@github.com:numba/pyculib_sorting.git` as desired.
 
 
 ## Building the libraries
