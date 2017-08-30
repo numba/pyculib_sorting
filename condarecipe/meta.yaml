@@ -25,3 +25,9 @@ test:
     - pytest
   commands:
     - pytest test -v
+
+about:
+    home: https://github.com/numba/pyculib_sorting
+    license: BSD
+    license_file: LICENSE
+    summary: Sorting libraries for Pyculib.
