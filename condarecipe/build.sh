@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 function build() {
   cd $RECIPE_DIR/..
   python build_sorting_libs.py
