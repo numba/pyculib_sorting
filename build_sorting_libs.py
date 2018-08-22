@@ -110,9 +110,10 @@ def cuda_version():
     output parsed successfully, ``None`` otherwise. For instance:
     >>> {'major': 9, 'minor': 2, 'patch': 148}
     """
-    nvcc = locate_nvcc()
-    full_output = subprocess.check_output([nvcc, '--version'], stderr=sys.stdout)
     try:
+        nvcc = locate_nvcc()
+        full_output = subprocess.check_output([nvcc, '--version'],
+                                              stderr=sys.stdout)
         version_numbers_str = full_output.strip().split('V')[-1].split('.')
         return {'major': int(version_numbers_str[0]),
                 'minor': int(version_numbers_str[1]),
