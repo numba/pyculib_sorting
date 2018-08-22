@@ -65,8 +65,7 @@ def gencode_flags():
 
 
 def build_cuda(srcdir, out, ins, includes):
-    # Allow specification of nvcc location in NVCC env var
-    nvcc = os.environ.get('NVCC', 'nvcc')
+    nvcc = locate_nvcc()
 
     # Build for 32- or 64-bit
     optflags = '-m%s --compiler-options "-fPIC"'
@@ -84,6 +83,15 @@ def build_cuda(srcdir, out, ins, includes):
                           inp=inputs, opt=opt)
     cmd = ' '.join([nvcc, args])
     run_shell(cmd)
+
+
+def locate_nvcc():
+    """
+    Locate nvcc command on the platform, allowing specification
+    of nvcc location in NVCC env var.
+
+    """
+    return os.environ.get('NVCC', 'nvcc')
 
 
 def build_radixsort():
