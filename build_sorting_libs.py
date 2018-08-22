@@ -52,9 +52,15 @@ def gencode_flags():
     GENCODE_COMPUTEXX = "-gencode arch=compute_{CC},code=compute_{CC}"
     GENCODE_COMPUTE53 = GENCODE_COMPUTEXX.format(CC=53)
 
+    # Get CUDA version
+    _cuda_version = cuda_version()
+
     # Concatenate flags
     SM = []
-    SM.append(GENCODE_SM20)
+    # Not all architectures are supported by all CUDA versions
+    if _cuda_version:
+        if _cuda_version['major'] <= 8:
+            SM.append(GENCODE_SM20)
     SM.append(GENCODE_SM30)
     SM.append(GENCODE_SM35)
     SM.append(GENCODE_SM37)
