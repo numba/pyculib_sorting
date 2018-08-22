@@ -1,6 +1,7 @@
 # A script to build external dependencies
 
 import os
+import sys
 import subprocess
 import platform
 
@@ -92,6 +93,26 @@ def locate_nvcc():
 
     """
     return os.environ.get('NVCC', 'nvcc')
+
+
+def cuda_version():
+    r"""
+    Get installed CUDA version by calling ``nvcc --version`` and parsing its
+    output. This method never raises an exception.
+
+    :returns: a dictionary describing the version, if the command is run and
+    output parsed successfully, ``None`` otherwise. For instance:
+    >>> {'major': 9, 'minor': 2, 'patch': 148}
+    """
+    nvcc = locate_nvcc()
+    full_output = subprocess.check_output([nvcc, '--version'], stderr=sys.stdout)
+    try:
+        version_numbers_str = full_output.strip().split('V')[-1].split('.')
+        return {'major': int(version_numbers_str[0]),
+                'minor': int(version_numbers_str[1]),
+                'patch': int(version_numbers_str[2])}
+    except:
+        return None
 
 
 def build_radixsort():
