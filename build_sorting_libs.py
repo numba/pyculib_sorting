@@ -1,6 +1,7 @@
 # A script to build external dependencies
 
 import os
+import sys
 import subprocess
 import platform
 
@@ -51,9 +52,15 @@ def gencode_flags():
     GENCODE_COMPUTEXX = "-gencode arch=compute_{CC},code=compute_{CC}"
     GENCODE_COMPUTE53 = GENCODE_COMPUTEXX.format(CC=53)
 
+    # Get CUDA version
+    _cuda_version = cuda_version()
+
     # Concatenate flags
     SM = []
-    SM.append(GENCODE_SM20)
+    # Not all architectures are supported by all CUDA versions
+    if _cuda_version:
+        if _cuda_version['major'] <= 8:
+            SM.append(GENCODE_SM20)
     SM.append(GENCODE_SM30)
     SM.append(GENCODE_SM35)
     SM.append(GENCODE_SM37)
@@ -65,8 +72,7 @@ def gencode_flags():
 
 
 def build_cuda(srcdir, out, ins, includes):
-    # Allow specification of nvcc location in NVCC env var
-    nvcc = os.environ.get('NVCC', 'nvcc')
+    nvcc = locate_nvcc()
 
     # Build for 32- or 64-bit
     optflags = '-m%s --compiler-options "-fPIC"'
@@ -84,6 +90,36 @@ def build_cuda(srcdir, out, ins, includes):
                           inp=inputs, opt=opt)
     cmd = ' '.join([nvcc, args])
     run_shell(cmd)
+
+
+def locate_nvcc():
+    """
+    Locate nvcc command on the platform, allowing specification
+    of nvcc location in NVCC env var.
+
+    """
+    return os.environ.get('NVCC', 'nvcc')
+
+
+def cuda_version():
+    r"""
+    Get installed CUDA version by calling ``nvcc --version`` and parsing its
+    output. This method never raises an exception.
+
+    :returns: a dictionary describing the version, if the command is run and
+    output parsed successfully, ``None`` otherwise. For instance:
+    >>> {'major': 9, 'minor': 2, 'patch': 148}
+    """
+    try:
+        nvcc = locate_nvcc()
+        full_output = subprocess.check_output([nvcc, '--version'],
+                                              stderr=sys.stdout)
+        version_numbers_str = full_output.strip().split('V')[-1].split('.')
+        return {'major': int(version_numbers_str[0]),
+                'minor': int(version_numbers_str[1]),
+                'patch': int(version_numbers_str[2])}
+    except:
+        return None
 
 
 def build_radixsort():
